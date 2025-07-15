@@ -9,6 +9,8 @@ import useFetch from "@/hooks/use-fetch";
 import { getUrls } from "@/db/ApiUrl";
 import { getClicksForUrls } from "@/db/ApiClicks";
 import Error from "@/components/Error";
+import LinkCard from "@/components/ui/LinkCard";
+import CreateLink from "@/components/ui/CreateLink";
 
 const Dashboard = () => {
   const [searchquery, setSearchQuery] = useState("");
@@ -18,7 +20,7 @@ const Dashboard = () => {
     error,
     data: urls,
     fn: fnUrls,
-  } = useFetch(getUrls, user.id);
+  } = useFetch(getUrls, user?.id);
   const {
     loading: loadingClicks,
     error: errorClicks,
@@ -26,7 +28,7 @@ const Dashboard = () => {
     fn: fnClicks,
   } = useFetch(
     getClicksForUrls,
-    urls?.map((url) => url.id)
+    urls?.map((url) => url?.id)
   );
 
   useEffect(() => {
@@ -40,7 +42,7 @@ const Dashboard = () => {
   }, [urls?.length]);
 
   const filteredUrls = urls?.filter((url) => {
-    url.title.toLowerCase().includes(searchquery.toLowerCase());
+    return url?.title?.toLowerCase().includes(searchquery.toLowerCase());
   });
 
   return (
@@ -66,9 +68,9 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between p-3">
         <h1 className="text-4xl font-extrabold">My Links</h1>
-        <Button>Create Link</Button>
+       <CreateLink/>
       </div>
       <div className="relative">
         <Input
@@ -79,7 +81,11 @@ const Dashboard = () => {
         />
         <Filter className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
       </div>
+
       {(error || errorClicks) && <Error message={error?.message} />}
+      {(filteredUrls || []).map((url, i) => {
+        return <LinkCard key={i} url={url} fetchUrls={fnUrls} />;
+      })}
     </div>
   );
 };

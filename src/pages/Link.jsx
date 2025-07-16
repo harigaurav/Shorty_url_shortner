@@ -14,6 +14,8 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import LocationStats from "@/components/ui/LocationStats";
 import DeviceStats from "@/components/ui/DeviceStats";
 
+const appUrl = import.meta.env.VITE_APP_URL;
+
 const Link = () => {
   const { user } = urlState();
   const { id } = useParams();
@@ -57,7 +59,7 @@ const Link = () => {
   if (error) {
     navigate("/dashboard");
   }
-  let link = "http://localhost:5173/";
+  let link = appUrl + "/";
   if (data) {
     link = data?.custom_url ? link + data?.custom_url : link + data?.short_url;
   }
@@ -91,7 +93,7 @@ const Link = () => {
             </span>
             <a
               className="text-sm sm:text-lg lg:text-2xl font-bold text-blue-500 hover:underline hover:cursor-pointer break-all"
-              href={`http://localhost:5173/${data?.custom_url ? data?.custom_url : data?.short_url}`}
+              href={link}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -108,7 +110,7 @@ const Link = () => {
               size="sm"
               className="text-xs sm:text-sm"
               onClick={() => {
-                const textToCopy = `http://localhost:5173/${data?.custom_url ? data?.custom_url : data?.short_url}`;
+                const textToCopy = `${appUrl}/${data?.custom_url ? data?.custom_url : data?.short_url}`;
                 navigator.clipboard.writeText(textToCopy);
               }}
             >

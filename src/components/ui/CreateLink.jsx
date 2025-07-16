@@ -22,6 +22,8 @@ import Error from "../Error";
 import { QRCode } from "react-qrcode-logo";
 import { BeatLoader } from "react-spinners";
 
+const appUrl = import.meta.env.VITE_APP_URL;
+
 const CreateLink = () => {
   const ref = useRef(); // Create a ref to store the QRCode component instance
   const navigate = useNavigate();
@@ -123,7 +125,7 @@ const CreateLink = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Card className="p-2  bg-transparent text-white">
-                  shorty.in
+                  {appUrl}
                 </Card>
                 <h1 className="text-white text-2xl">/</h1>
                 <Input

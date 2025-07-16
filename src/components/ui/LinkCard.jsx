@@ -7,6 +7,8 @@ import useFetch from "@/hooks/use-fetch";
 import { deleteUrl } from "@/db/ApiUrl";
 import { BeatLoader } from "react-spinners";
 
+const appUrl = import.meta.env.VITE_APP_URL;
+
 const LinkCard = ({ url, fetchUrls }) => {
   // Add guard clause
   if (!url) {
@@ -35,7 +37,7 @@ const LinkCard = ({ url, fetchUrls }) => {
           {url?.title}
         </span>
         <span className="text-2xl text-blue-500 font-bold hover:underline hover:cursor-pointer">
-          http://localhost:5173/{url?.custom_url ? url?.custom_url : url?.short_url}
+          {appUrl}/{url?.custom_url ? url?.custom_url : url?.short_url}
         </span>
         <span className="flex items-center gap-2 hover:underline hover:cursor-pointer">
           {url.original_url}
@@ -48,7 +50,7 @@ const LinkCard = ({ url, fetchUrls }) => {
       <div>
         <Button variant="ghost" onClick={() => {
             navigator.clipboard.writeText(
-              `http://localhost:5173/${url?.custom_url ? url?.custom_url : url?.short_url}`
+              `${appUrl}/${url?.custom_url ? url?.custom_url : url?.short_url}`
             );
           }}>
           <Copy />

@@ -39,7 +39,7 @@ const LinkCard = ({ url, fetchUrls }) => {
         <span className="text-2xl text-blue-500 font-bold hover:underline hover:cursor-pointer">
           {appUrl}/{url?.custom_url ? url?.custom_url : url?.short_url}
         </span>
-        <span className="flex items-center gap-2 hover:underline hover:cursor-pointer">
+        <span className="flex items-center gap-2 hover:underline hover:cursor-pointer text-gray-300 truncate max-w-[120px] sm:max-w-[180px]" title={url.original_url}>
           {url.original_url}
         </span>
         <span className="text-sm font-extralight flex items-end flex-1 gap-2">

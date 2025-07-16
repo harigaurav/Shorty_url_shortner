@@ -80,8 +80,9 @@ const Link = () => {
               Original Link:
             </span>
             <a
-              className="text-sm sm:text-lg lg:text-2xl font-bold text-blue-500 hover:underline hover:cursor-pointer break-all"
+              className="text-sm sm:text-lg lg:text-2xl font-bold text-blue-500 hover:underline hover:cursor-pointer break-all max-w-[150px] sm:max-w-[200px] lg:max-w-[250px] truncate"
               href={data?.original_url}
+              title={data?.original_url}
             >
               {data?.original_url}
             </a>

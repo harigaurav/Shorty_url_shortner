@@ -24,10 +24,10 @@ const LinkCard = ({ url, fetchUrls }) => {
   };
 
   return (
-    <div className=" flex flex-col md:flex-row gap-5 border-2 border-[#CBACAC] p-3 rounded-lg">
+    <div className=" flex flex-col md:flex-row gap-5 border-2 border-white p-3 rounded-lg">
       <img
         src={url?.qr}
-        className="w-32 h-32 ring ring-[#CBACAC] rounded-lg"
+        className="w-32 h-32 ring ring-white rounded-lg"
         alt="qr code"
       />
       <Link to={`/link/${url?.id}`} className="flex flex-col gap-2 flex-1">
@@ -58,7 +58,7 @@ const LinkCard = ({ url, fetchUrls }) => {
           <Download />
         </Button>
          <Button variant="ghost" onClick={()=>fnDelete().then(()=>fetchUrls())}>
-           {loadingDelete? <BeatLoader size={10} color=" #CBACAC" /> : <Trash />}
+           {loadingDelete? <BeatLoader size={10} color="white" /> : <Trash />}
         </Button>
       </div>
     </div>

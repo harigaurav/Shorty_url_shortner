@@ -145,7 +145,7 @@ const CreateLink = () => {
                 onClick={createURL}
                 variant="destructive"
               >
-                {loading ? <BeatLoader size={10} color="black" /> : "Create"}
+                {loading ? <BeatLoader size={10} color="white" /> : "Create"}
               </Button>
             </DialogFooter>
           </DialogContent>

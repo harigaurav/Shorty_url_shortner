@@ -48,23 +48,23 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col gap-10 p-3">
       {(loading || loadingClicks) && (
-        <BarLoader color="#CBACAC" width={"100%"} />
+        <BarLoader color="white" width={"100%"} />
       )}
       <div className="grid grid-cols-2 gap-4">
-        <Card className="bg-gradient-to-r from-[#E6D6D6] to-[#CBACAC]">
+        <Card className="bg-transparent">
           <CardHeader>
-            <CardTitle>Links Created</CardTitle>
+            <CardTitle className="text-white font-bold text-2xl">Links Created</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{urls?.length}</p>
+            <p className="text-white font-bold text-2xl">{urls?.length}</p>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-r from-[#CBACAC] to-[#E6D6D6]">
+        <Card className="bg-transparent">
           <CardHeader>
-            <CardTitle>Total Clicks</CardTitle>
+            <CardTitle className="text-white font-bold text-2xl">Total Clicks</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{clicks?.length}</p>
+            <p className="text-white font-bold text-2xl">{clicks?.length}</p>
           </CardContent>
         </Card>
       </div>

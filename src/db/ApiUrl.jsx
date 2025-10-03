@@ -2,6 +2,7 @@ import { UAParser } from "ua-parser-js";
 import supabase from "./supabase";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 
+// Get all URLs for a user
 export async function getUrls(user_id) {
   const { data, error } = await supabase
     .from("urls")
@@ -11,24 +12,26 @@ export async function getUrls(user_id) {
   return data;
 }
 
+// Delete a URL by ID
 export async function deleteUrl(id) {
   const { error } = await supabase.from("urls").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
 
+// Create a new shortened URL with QR code
 export async function createUrl(
   { title, long_url, custom_link, user_id },
   qrcode
 ) {
   const generatedShortUrl = Math.random().toString(36).substring(2, 6);
-  const fileName = qr-${generatedShortUrl};
+  const fileName = `qr-${generatedShortUrl}`;
 
   const { error: storageError } = await supabase.storage
     .from("qr")
     .upload(fileName, qrcode);
   if (storageError) throw new Error(storageError.message);
 
-  const qr = ${supabaseUrl}/storage/v1/object/public/qr/${fileName};
+  const qr = `${supabaseUrl}/storage/v1/object/public/qr/${fileName}`;
 
   const { data, error } = await supabase
     .from("urls")
@@ -46,14 +49,15 @@ export async function createUrl(
   if (error) throw new Error(error.message);
   return data;
 }
+
+// Get long/original URL from short/custom ID
 export async function getLongURL(id) {
   if (!id) throw new Error("URL ID is required");
 
-  // Use proper parameter binding for security
   const { data, error } = await supabase
     .from("urls")
     .select("id,original_url")
-    .or(short_url.eq.${id},custom_url.eq.${id})
+    .or(`short_url.eq.${id},custom_url.eq.${id}`)
     .single();
 
   if (error) throw new Error(error.message);
@@ -62,6 +66,7 @@ export async function getLongURL(id) {
   return data;
 }
 
+// Store click details (device, city, country)
 const parser = new UAParser();
 export const storeClicks = async ({ id, original_url }) => {
   console.log("storeClicks: Starting with URL:", original_url);
@@ -74,12 +79,12 @@ export const storeClicks = async ({ id, original_url }) => {
     let country = "Unknown";
 
     try {
-      // First get IP address
+      // Get IP address
       const ipResponse = await fetch("https://api.ipify.org?format=json");
       const { ip } = await ipResponse.json();
 
-      // Then get location data using the IP
-      const locationResponse = await fetch(https://ipapi.co/${ip}/json/);
+      // Get location using the IP
+      const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
       const locationData = await locationResponse.json();
 
       if (locationData && !locationData.error) {
@@ -99,10 +104,10 @@ export const storeClicks = async ({ id, original_url }) => {
   } catch (error) {
     console.error("Error storing click:", error);
   } finally {
-    // Ensure the URL has a protocol
+    // Ensure redirect URL has protocol
     let redirectUrl = original_url;
-    if (!redirectUrl.startsWith('http://') && !redirectUrl.startsWith('https://')) {
-      redirectUrl = 'https://' + redirectUrl;
+    if (!redirectUrl.startsWith("http://") && !redirectUrl.startsWith("https://")) {
+      redirectUrl = "https://" + redirectUrl;
     }
 
     console.log("storeClicks: Redirecting to:", redirectUrl);
@@ -111,6 +116,7 @@ export const storeClicks = async ({ id, original_url }) => {
   }
 };
 
+// Get a specific URL by ID and user ID
 export async function get_URL({ id, user_id }) {
   if (!id) throw new Error("URL id is required");
   if (!user_id) throw new Error("User id is required");
@@ -121,10 +127,11 @@ export async function get_URL({ id, user_id }) {
     .eq("id", id)
     .eq("user_id", user_id)
     .single();
+
   if (error) {
     throw new Error(error.message);
   }
   if (!data) throw new Error("URL not found");
 
-  return data;
+  return data;
 }

@@ -64,6 +64,7 @@ export async function getLongURL(id) {
 
 const parser = new UAParser();
 export const storeClicks = async ({ id, original_url }) => {
+  console.log("storeClicks: Starting with URL:", original_url);
   try {
     // Get device info
     const res = parser.getResult();
@@ -78,12 +79,12 @@ export const storeClicks = async ({ id, original_url }) => {
       const { ip } = await ipResponse.json();
 
       // Then get location data using the IP
-      const locationResponse = await fetch(`http://ip-api.com/json/${ip}`);
+      const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
       const locationData = await locationResponse.json();
 
-      if (locationData.status === "success") {
+      if (locationData && !locationData.error) {
         city = locationData.city || "Unknown";
-        country = locationData.country || "Unknown";
+        country = locationData.country_name || "Unknown";
       }
     } catch (locationError) {
       console.log("Could not fetch location:", locationError);
@@ -98,7 +99,15 @@ export const storeClicks = async ({ id, original_url }) => {
   } catch (error) {
     console.error("Error storing click:", error);
   } finally {
-    window.location.href = original_url;
+    // Ensure the URL has a protocol
+    let redirectUrl = original_url;
+    if (!redirectUrl.startsWith('http://') && !redirectUrl.startsWith('https://')) {
+      redirectUrl = 'https://' + redirectUrl;
+    }
+
+    console.log("storeClicks: Redirecting to:", redirectUrl);
+    // Perform the redirect
+    window.location.href = redirectUrl;
   }
 };
 

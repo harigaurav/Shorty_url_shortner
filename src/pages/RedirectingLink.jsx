@@ -10,28 +10,30 @@ const RedirectingLink = () => {
   const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    // Fetch the long URL when component mounts
-    console.log("RedirectingLink: Fetching URL for ID:", id);
-    fnGetLongURL(id);
-  }, []);
+    if (id) {
+      console.log("RedirectingLink: Fetching URL for ID:", id);
+      fnGetLongURL(id);
+    }
+  }, [id]);
 
   useEffect(() => {
-    // When data is loaded, store click and redirect
     if (data && !loading && !redirecting) {
       console.log("RedirectingLink: Data loaded, redirecting to:", data.original_url);
       setRedirecting(true);
-      // Call storeClicks which will handle the redirection
       storeClicks({ id: data.id, original_url: data.original_url });
     }
   }, [data, loading, redirecting]);
 
+  if (!id) {
+    return <div>Error: Missing short URL ID</div>;
+  }
+
   if (loading || redirecting) {
     return (
-      <>
+      <div style={{ textAlign: "center", marginTop: "2rem" }}>
         <BarLoader width={"100%"} color="white" />
-        <br />
-        Redirecting...........
-      </>
+        <p>Redirecting, please wait...</p>
+      </div>
     );
   }
 

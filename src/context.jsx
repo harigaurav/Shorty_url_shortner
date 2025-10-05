@@ -12,13 +12,14 @@ const Urlprovider = ({ children }) => {
     fn: fnGetUser,
   } = useFetch(getCurrentUser);
 
-  // Supabase user is authenticated if we have a user object
-  const isAuthenticated = !!user;
+  // Supabase user is authenticated only if we have a valid user object with an id
+  // (some hooks or APIs may return an empty object which would be truthy)
+  const isAuthenticated = Boolean(user && user.id);
 
   useEffect(() => {
     fnGetUser();
   }, []);
-  
+
   return (
     <UrlContext.Provider value={{ user, loading, fnGetUser, isAuthenticated }}>
       {children}

@@ -22,12 +22,48 @@ const Link = () => {
   const navigate = useNavigate();
 
   const downloadHandler = () => {
-    const element = document.createElement("a");
-    const file = new Blob([data?.qr], { type: "image/png" });
-    element.href = URL.createObjectURL(file);
-    element.download = `qr-${data?.title}.png`;
-    document.body.appendChild(element);
-    element.click();
+    // Fetch the image bytes, create a blob and download it.
+    (async () => {
+      try {
+        const qrUrl = data?.qr;
+        if (!qrUrl) return;
+        const resp = await fetch(qrUrl, { mode: "cors" });
+        const blob = await resp.blob();
+        const filename = `qr-${data?.title || "code"}.png`;
+
+        // If Web Share API with Files is available, prefer that on mobile
+        if (
+          navigator.canShare &&
+          navigator.canShare({
+            files: [new File([blob], filename, { type: blob.type })],
+          })
+        ) {
+          const file = new File([blob], filename, { type: blob.type });
+          await navigator.share({ files: [file], title: filename });
+          return;
+        }
+
+        const objectUrl = URL.createObjectURL(blob);
+        const element = document.createElement("a");
+        element.href = objectUrl;
+        element.download = filename;
+        document.body.appendChild(element);
+        // Some mobile browsers ignore download, open in new tab as fallback
+        try {
+          element.click();
+        } catch (e) {
+          window.open(objectUrl, "_blank");
+        }
+        setTimeout(() => {
+          URL.revokeObjectURL(objectUrl);
+          element.remove();
+        }, 1000);
+      } catch (err) {
+        console.error("QR download failed", err);
+        // Fallback: open the image URL directly
+        if (data?.qr) window.open(data.qr, "_blank");
+      }
+    })();
   };
 
   const {
@@ -66,9 +102,7 @@ const Link = () => {
 
   return (
     <>
-      {(loading || loadingstats) && (
-        <BarLoader color="white" width={"100%"} />
-      )}
+      {(loading || loadingstats) && <BarLoader color="white" width={"100%"} />}
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-10 p-3 lg:p-6 justify-between min-h-screen">
         <div className="flex flex-col gap-3 lg:gap-5 p-3 rounded-lg w-full lg:w-auto">
           <span className="text-2xl sm:text-3xl lg:text-5xl font-extrabold text-white break-words">
@@ -111,7 +145,9 @@ const Link = () => {
               size="sm"
               className="text-xs sm:text-sm"
               onClick={() => {
-                const textToCopy = `${appUrl}/${data?.custom_url ? data?.custom_url : data?.short_url}`;
+                const textToCopy = `${appUrl}/${
+                  data?.custom_url ? data?.custom_url : data?.short_url
+                }`;
                 navigator.clipboard.writeText(textToCopy);
               }}
             >
@@ -119,8 +155,8 @@ const Link = () => {
               <span className="ml-1 hidden sm:inline">Copy</span>
             </Button>
 
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               className="text-xs sm:text-sm"
               onClick={downloadHandler}
@@ -162,10 +198,14 @@ const Link = () => {
             <CardContent className="flex flex-col gap-3 lg:gap-5">
               <Card className="bg-transparent text-white border-2 border-white rounded-xl p-3 lg:p-5">
                 <CardHeader>
-                  <CardTitle className="text-lg sm:text-xl lg:text-2xl">Total Clicks</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl lg:text-2xl">
+                    Total Clicks
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold">{stats?.length}</p>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold">
+                    {stats?.length}
+                  </p>
                 </CardContent>
               </Card>
               <div className="flex flex-col gap-3 lg:gap-5">

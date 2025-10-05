@@ -26,8 +26,15 @@ const Header = () => {
   return (
     <>
       <nav className="flex flex-row justify-between items-center px-6 animate-fade-in">
-        <Link className="transform hover:scale-105 transition-transform duration-300" to="/">
-          <img src="/logo.png" alt="shorty logo" className="h-30 animate-bounce-slow" />
+        <Link
+          className="transform hover:scale-105 transition-transform duration-300"
+          to="/"
+        >
+          <img
+            src="/logo.png"
+            alt="shorty logo"
+            className="h-30 animate-bounce-slow"
+          />
         </Link>
 
         <div>
@@ -56,7 +63,7 @@ const Header = () => {
                   {user?.user_metadata.name}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => navigate("/dashboard")}
                   className="hover:bg-white/10 transition-colors duration-200"
                 >
@@ -79,8 +86,14 @@ const Header = () => {
           )}
         </div>
       </nav>
-      {loading && <BarLoader className="mb-4 animate-pulse" width={"100%"} color="white" />}
-      
+      {loading && (
+        <BarLoader
+          className="mb-4 animate-pulse"
+          width={"100%"}
+          color="white"
+        />
+      )}
+
       <style>{`
         @keyframes fade-in {
           0% { opacity: 0; }

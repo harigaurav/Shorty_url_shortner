@@ -21,7 +21,8 @@ export async function createUrl(
   qrcode
 ) {
   const generatedShortUrl = Math.random().toString(36).substring(2, 6);
-  const fileName = `qr-${generatedShortUrl}`;
+  // ensure uploaded files have an extension so served content-type/filenames are correct
+  const fileName = `qr-${generatedShortUrl}.png`;
 
   const { error: storageError } = await supabase.storage
     .from("qr")

@@ -15,14 +15,50 @@ const LinkCard = ({ url, fetchUrls }) => {
     return null;
   }
 
-  const{loading:loadingDelete, error: errorDelete, fn: fnDelete} = useFetch(deleteUrl, url?.id);
-  const downloadHandler = () => {
-    const element = document.createElement("a");
-    const file = new Blob([url?.qr], { type: "image/png" });
-    element.href = URL.createObjectURL(file);
-    element.download = `qr-${url?.title}.png`;
-    document.body.appendChild(element);
-    element.click();
+  const {
+    loading: loadingDelete,
+    error: errorDelete,
+    fn: fnDelete,
+  } = useFetch(deleteUrl, url?.id);
+  const downloadHandler = async () => {
+    try {
+      const qrUrl = url?.qr;
+      if (!qrUrl) return;
+
+      const resp = await fetch(qrUrl, { mode: "cors" });
+      const blob = await resp.blob();
+      const filename = `qr-${url?.title || "code"}.png`;
+
+      // Prefer Web Share API with Files on supported mobile browsers
+      if (
+        navigator.canShare &&
+        navigator.canShare({
+          files: [new File([blob], filename, { type: blob.type })],
+        })
+      ) {
+        const file = new File([blob], filename, { type: blob.type });
+        await navigator.share({ files: [file], title: filename });
+        return;
+      }
+
+      const objectUrl = URL.createObjectURL(blob);
+      const element = document.createElement("a");
+      element.href = objectUrl;
+      element.download = filename;
+      document.body.appendChild(element);
+      try {
+        element.click();
+      } catch (e) {
+        window.open(objectUrl, "_blank");
+      }
+      setTimeout(() => {
+        URL.revokeObjectURL(objectUrl);
+        element.remove();
+      }, 1000);
+    } catch (err) {
+      console.error("QR download failed", err);
+      if (url?.qr) window.open(url.qr, "_blank");
+    }
   };
 
   return (
@@ -39,7 +75,10 @@ const LinkCard = ({ url, fetchUrls }) => {
         <span className="text-2xl text-blue-500 font-bold hover:underline hover:cursor-pointer">
           {appUrl}/{url?.custom_url ? url?.custom_url : url?.short_url}
         </span>
-        <span className="flex items-center gap-2 hover:underline hover:cursor-pointer text-gray-300 truncate max-w-[120px] sm:max-w-[180px]" title={url.original_url}>
+        <span
+          className="flex items-center gap-2 hover:underline hover:cursor-pointer text-gray-300 truncate max-w-[120px] sm:max-w-[180px]"
+          title={url.original_url}
+        >
           {url.original_url}
         </span>
         <span className="text-sm font-extralight flex items-end flex-1 gap-2">
@@ -48,19 +87,25 @@ const LinkCard = ({ url, fetchUrls }) => {
       </Link>
 
       <div>
-        <Button variant="ghost" onClick={() => {
+        <Button
+          variant="ghost"
+          onClick={() => {
             navigator.clipboard.writeText(
               `${appUrl}/${url?.custom_url ? url?.custom_url : url?.short_url}`
             );
-          }}>
+          }}
+        >
           <Copy />
         </Button>
-       
+
         <Button variant="ghost" onClick={downloadHandler}>
           <Download />
         </Button>
-         <Button variant="ghost" onClick={()=>fnDelete().then(()=>fetchUrls())}>
-           {loadingDelete? <BeatLoader size={10} color="white" /> : <Trash />}
+        <Button
+          variant="ghost"
+          onClick={() => fnDelete().then(() => fetchUrls())}
+        >
+          {loadingDelete ? <BeatLoader size={10} color="white" /> : <Trash />}
         </Button>
       </div>
     </div>

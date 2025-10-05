@@ -33,7 +33,7 @@ const Auth = () => {
           : "Login/Signup"}
       </h1>
       <Tabs defaultValue="Login" className="w-[400px]">
-        <TabsList className="w-full grid grid-cols-2 bg-[#CAABAB] rounded-sm">
+        <TabsList className="w-full grid grid-cols-2 bg-[] rounded-sm">
           <TabsTrigger value="Login">Login</TabsTrigger>
           <TabsTrigger value="Signup">Signup</TabsTrigger>
         </TabsList>

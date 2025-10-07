@@ -1,8 +1,11 @@
+
+
+
+
 import React from "react";
 import { Link } from "react-router-dom";
-import { date } from "yup";
 import { Button } from "./button";
-import { Copy, Delete, Download, Trash } from "lucide-react";
+import { Copy, Download, Trash } from "lucide-react";
 import useFetch from "@/hooks/use-fetch";
 import { deleteUrl } from "@/db/ApiUrl";
 import { BeatLoader } from "react-spinners";
@@ -10,16 +13,15 @@ import { BeatLoader } from "react-spinners";
 const appUrl = import.meta.env.VITE_APP_URL;
 
 const LinkCard = ({ url, fetchUrls }) => {
-  // Add guard clause
   if (!url) {
     return null;
   }
 
   const {
     loading: loadingDelete,
-    error: errorDelete,
     fn: fnDelete,
   } = useFetch(deleteUrl, url?.id);
+
   const downloadHandler = async () => {
     try {
       const qrUrl = url?.qr;
@@ -29,7 +31,6 @@ const LinkCard = ({ url, fetchUrls }) => {
       const blob = await resp.blob();
       const filename = `qr-${url?.title || "code"}.png`;
 
-      // Prefer Web Share API with Files on supported mobile browsers
       if (
         navigator.canShare &&
         navigator.canShare({
@@ -62,31 +63,31 @@ const LinkCard = ({ url, fetchUrls }) => {
   };
 
   return (
-    <div className=" flex flex-col md:flex-row gap-5 border-2 border-white p-3 rounded-lg">
+    <div className="flex flex-col  md:flex-row gap-5 border-2 border-white p-3 rounded-lg">
       <img
         src={url?.qr}
-        className="w-32 h-32 ring ring-white rounded-lg"
         alt="qr code"
+        className="w-32 h-32 ring ring-white rounded-lg flex-shrink-0 mx-auto md:mx-0"
       />
-      <Link to={`/link/${url?.id}`} className="flex flex-col gap-2 flex-1">
-        <span className="text-3xl font-extrabold hover:underline hover:cursor-pointer">
+      <Link to={`/link/${url?.id}`} className="flex flex-col gap-2 flex-1 min-w-0">
+        <span className="text-3xl font-extrabold hover:underline hover:cursor-pointer truncate">
           {url?.title}
         </span>
-        <span className="text-2xl text-blue-500 font-bold hover:underline hover:cursor-pointer">
+        <span className="text-2xl text-blue-500 font-bold hover:underline hover:cursor-pointer truncate">
           {appUrl}/{url?.custom_url ? url?.custom_url : url?.short_url}
         </span>
         <span
-          className="flex items-center gap-2 hover:underline hover:cursor-pointer text-gray-300 truncate max-w-[120px] sm:max-w-[180px]"
+          className="flex items-center gap-2 hover:underline hover:cursor-pointer text-gray-300 truncate max-w-full"
           title={url.original_url}
         >
           {url.original_url}
         </span>
-        <span className="text-sm font-extralight flex items-end flex-1 gap-2">
+        <span className="text-sm font-extralight flex items-end flex-1 gap-2 truncate">
           {new Date(url?.created_at).toLocaleString()}
         </span>
       </Link>
 
-      <div>
+      <div className="flex flex-row items-center justify-center gap-2 flex-shrink-0">
         <Button
           variant="ghost"
           onClick={() => {
@@ -94,16 +95,18 @@ const LinkCard = ({ url, fetchUrls }) => {
               `${appUrl}/${url?.custom_url ? url?.custom_url : url?.short_url}`
             );
           }}
+          aria-label="Copy Link"
         >
           <Copy />
         </Button>
 
-        <Button variant="ghost" onClick={downloadHandler}>
+        <Button variant="ghost" onClick={downloadHandler} aria-label="Download QR Code">
           <Download />
         </Button>
         <Button
           variant="ghost"
           onClick={() => fnDelete().then(() => fetchUrls())}
+          aria-label="Delete Link"
         >
           {loadingDelete ? <BeatLoader size={10} color="white" /> : <Trash />}
         </Button>

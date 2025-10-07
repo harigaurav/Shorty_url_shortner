@@ -13,29 +13,34 @@ const Auth = () => {
   const { isAuthenticated, loading } = urlState();
 
   useEffect(() => {
-    // Only redirect if we've finished loading and the user is authenticated
     if (isAuthenticated && !loading) {
-      const redirectPath = `/dashboard${LongLink ? `?createNew=${LongLink}` : ""}`;
+      const redirectPath = `/dashboard${
+        LongLink ? `?createNew=${LongLink}` : ""
+      }`;
       navigate(redirectPath, { replace: true });
     }
   }, [isAuthenticated, loading, navigate, LongLink]);
 
-  // If still loading or authenticated, show a loading state
   if (loading || isAuthenticated) {
     return <div className="flex justify-center mt-10">Loading...</div>;
   }
 
   return (
-    <div className="flex flex-col items-center gap-10">
-      <h1 className="text-3xl font-mono font-bold text-gradient text-[#CAABAB]">
-        {searchParams.get("createNew")
-          ? "Hold up! let's login first.."
-          : "Login/Signup"}
+    <div className="flex flex-col items-center gap-10 px-4 sm:px-6 md:px-8">
+      <h1 className="text-2xl sm:text-3xl font-mono font-bold text-gradient text-[#CAABAB] text-center max-w-xl">
+        {LongLink ? "Hold up! let's login first.." : "Login/Signup"}
       </h1>
-      <Tabs defaultValue="Login" className="w-[400px]">
+      <Tabs
+        defaultValue="Login"
+        className="w-full max-w-sm sm:max-w-md md:max-w-md"
+      >
         <TabsList className="w-full grid grid-cols-2 bg-[] rounded-sm">
-          <TabsTrigger value="Login">Login</TabsTrigger>
-          <TabsTrigger value="Signup">Signup</TabsTrigger>
+          <TabsTrigger className="text-[#CAABAB]" value="Login">
+            Login
+          </TabsTrigger>
+          <TabsTrigger className="text-[#CAABAB]" value="Signup">
+            Signup
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="Login">
           <Login />
